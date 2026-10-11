@@ -1,4 +1,5 @@
 import subprocess
+import time
 
 
 def get_default_gateway():
@@ -52,17 +53,34 @@ def display_results(target, packet_loss, average_latency):
     print()
 
 
-print("LinkLens Network Probe")
-print("----------------------")
+def monitor_network(interval=10):
+    print("LinkLens Network Monitor")
+    print("------------------------")
+    print(f"Monitoring interval: {interval} seconds")
+    print("Press Ctrl+C to stop.\n")
 
-gateway = get_default_gateway()
+    try:
+        while True:
+            print(f"Network check: {time.strftime('%Y-%m-%d %H:%M:%S')}")
+            print("------------------------")
 
-if gateway:
-    print("Local Network")
-    display_results(gateway, *measure_ping(gateway))
-else:
-    print("Could not detect default gateway.\n")
+            gateway = get_default_gateway()
 
-print("Internet Connection")
-display_results("1.1.1.1", *measure_ping("1.1.1.1"))
-display_results("8.8.8.8", *measure_ping("8.8.8.8"))
+            if gateway:
+                print("Local Network")
+                display_results(gateway, *measure_ping(gateway))
+            else:
+                print("Could not detect default gateway.\n")
+
+            print("Internet Connection")
+            display_results("1.1.1.1", *measure_ping("1.1.1.1"))
+            display_results("8.8.8.8", *measure_ping("8.8.8.8"))
+
+            time.sleep(interval)
+
+    except KeyboardInterrupt:
+        print("\nNetwork monitoring stopped.")
+
+
+if __name__ == "__main__":
+    monitor_network()
